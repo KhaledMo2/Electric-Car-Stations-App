@@ -1,0 +1,203 @@
+@startuml
+class com.example.ladesaeulen.StationAdapter {
+~ ArrayList<ChargingStation> stations
+~ ArrayList<ChargingStation> stationsFiltered
+~ Context context
+~ Dialog myDialog
+~ {static} ArrayList<ChargingStation> x
++ ViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(ViewHolder,int)
++ int getItemCount()
++ Filter getFilter()
+}
+class com.example.ladesaeulen.StationAdapter.ViewHolder {
+~ TextView textstationName
+~ TextView textaddress
+~ TextView textpostCity
+~ TextView textModeType
+}
+class com.example.ladesaeulen.RequestService {
++ {static} String REQUESTURL
++ {static} String UNIQUEID
++ {static} String FILENAME
++ {static} String FILEPATH
++ {static} String RESULT
++ {static} String NOTIFICATION
+- Handler uiServiceCallbackHandler
+- IBinder mBinder
++ IBinder onBind(Intent)
++ int onStartCommand(Intent,int,int)
++ void setCallback(Handler)
+- void runURLDownload(String,String,String,String)
+- void deliverResults(String,String,int,int)
+}
+class com.example.ladesaeulen.RequestService.RequestServiceBinder {
+~ RequestService getService()
+~ void runURLDownload(String,String,String,String)
++ void setCallback(Handler)
+}
+class com.example.ladesaeulen.RequestService.DownloadThread {
+- String uniqueId
+- String urlPath
+- String filePath
+- String fileName
+- int result
++ void run()
+}
+class com.example.ladesaeulen.StationManager {
+- {static} ArrayList<ChargingStation> station_storage
+- {static} ArrayList<ChargingStation> favorit_station_storage
+- {static} ArrayList<ChargingStation> nearby_station_storage
++ {static} void setStation_list(ArrayList<ChargingStation>)
++ {static} ArrayList<ChargingStation> getStation_list()
++ {static} void setFavorit_station_storage(ArrayList<ChargingStation>)
++ {static} ArrayList<ChargingStation> getFavorit_station_storage()
++ {static} ArrayList<ChargingStation> getNearby_station_storage()
++ {static} void setNearby_station_storage(double)
+}
+class com.example.ladesaeulen.MainActivity {
+- {static} int LOCATION_PERMISSION_REQUEST_CODE
+- {static} GoogleMap mMap
+- {static} Location loc
+~ int MY_PERMISSIONS_STORAGE_INTENRET
+- RequestService mService
+- RequestService.RequestServiceBinder binder
+~ boolean mBound
+- {static} String filePath
+- {static} String csvFile
+~ {static} ArrayList<ChargingStation> stations
+~ {static} ArrayList<MapMarkers> markers
+- {static} StationManager manager
+- {static} MarkerManager markerManager
+- ServiceConnection mConnection
+# void onCreate(Bundle)
++ void onMapReady(GoogleMap)
+- void enableMyLocation()
++ boolean onCreateOptionsMenu(Menu)
++ boolean onMyLocationButtonClick()
++ void onMyLocationClick(Location)
+- Handler getHandler()
++ void onRequestPermissionsResult(int,String[],int[])
++ {static} void csvRead()
++ void finish()
++ {static} boolean isNumeric(String)
+}
+class com.example.ladesaeulen.SearchActivity {
+- {static} StationManager manager
+~ EditText searchInput
+~ RecyclerView recyclerView
+~ Switch aSwitch
+~ Switch bSwitch
+~ boolean click
+# void onCreate(Bundle)
+}
+abstract class com.example.ladesaeulen.PermissionUtils {
++ {static} void requestPermission(AppCompatActivity,int,String,boolean)
++ {static} boolean isPermissionGranted(String[],int[],String)
+}
+class com.example.ladesaeulen.PermissionUtils.PermissionDeniedDialog {
+- {static} String ARGUMENT_FINISH_ACTIVITY
+- boolean finishActivity
++ {static} PermissionDeniedDialog newInstance(boolean)
++ Dialog onCreateDialog(Bundle)
++ void onDismiss(DialogInterface)
+}
+class com.example.ladesaeulen.PermissionUtils.RationaleDialog {
+- {static} String ARGUMENT_PERMISSION_REQUEST_CODE
+- {static} String ARGUMENT_FINISH_ACTIVITY
+- boolean finishActivity
++ {static} RationaleDialog newInstance(int,boolean)
++ Dialog onCreateDialog(Bundle)
++ void onDismiss(DialogInterface)
+}
+class com.example.ladesaeulen.ChargingStation {
+- int id
+- String operator
+- String street
+- String number
+- String additional
+- String postal_code
+- String location
+- String state
+- String area
+- double lat
+- double lon
+- String installation_date
+- double conn_power
+- int distance
+- boolean isDefekt
+- String chargingType
+- String module_type
+- int number_of_connections
+- boolean is_used
++ void setNumber(String)
++ void setModule_type(String)
++ int getId()
++ String getOperator()
++ void setOperator(String)
++ String getStreet()
++ String getNumber()
++ String getAdditional()
++ String getPostal_code()
++ void setPostal_code(String)
++ String getLocation()
++ void setLocation(String)
++ String getState()
++ String getArea()
++ void setArea(String)
++ double getLat()
++ double getLon()
++ String getInstallation_date()
++ double getConn_power()
++ String getModule_type()
++ int getNumber_of_connections()
++ boolean isIs_used()
++ void setId(int)
++ void setIs_used(boolean)
++ String getChargingType()
++ void setChargingType(String)
++ double getDistance()
++ void setdistance(float,float,double,double)
++ boolean getisDefekt()
++ void setisDefekt(boolean)
+}
+class com.example.ladesaeulen.MapMarkers {
+- LatLng location
+- String titel
+- double distance
++ LatLng getLocation()
++ void setLocation(LatLng)
++ String getTitel()
++ void setTitel(String)
++ double getDistance()
++ void setdistance(float,float,double,double)
+}
+class com.example.ladesaeulen.MarkerManager {
+- {static} ArrayList<MapMarkers> marker_storage
+- {static} ArrayList<MapMarkers> nearby_storage
++ {static} void setMarker_list(ArrayList<MapMarkers>)
++ {static} ArrayList<MapMarkers> getMarker_list()
++ {static} ArrayList<MapMarkers> getnearby_list()
++ {static} void setNearby_storage(double)
+}
+
+
+android.widget.Filterable <|.. com.example.ladesaeulen.StationAdapter
+com.example.ladesaeulen.Adapter <|-- com.example.ladesaeulen.StationAdapter
+com.example.ladesaeulen.StationAdapter +.. com.example.ladesaeulen.StationAdapter.ViewHolder
+com.example.ladesaeulen.ViewHolder <|-- com.example.ladesaeulen.StationAdapter.ViewHolder
+android.app.Service <|-- com.example.ladesaeulen.RequestService
+com.example.ladesaeulen.RequestService +.. com.example.ladesaeulen.RequestService.RequestServiceBinder
+com.example.ladesaeulen.Binder <|-- com.example.ladesaeulen.RequestService.RequestServiceBinder
+com.example.ladesaeulen.RequestService +.. com.example.ladesaeulen.RequestService.DownloadThread
+com.example.ladesaeulen.Thread <|-- com.example.ladesaeulen.RequestService.DownloadThread
+com.google.android.gms.maps.OnMapReadyCallback <|.. com.example.ladesaeulen.MainActivity
+com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener <|.. com.example.ladesaeulen.MainActivity
+com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener <|.. com.example.ladesaeulen.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.ladesaeulen.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.ladesaeulen.SearchActivity
+com.example.ladesaeulen.PermissionUtils +.. com.example.ladesaeulen.PermissionUtils.PermissionDeniedDialog
+com.example.ladesaeulen.DialogFragment <|-- com.example.ladesaeulen.PermissionUtils.PermissionDeniedDialog
+com.example.ladesaeulen.PermissionUtils +.. com.example.ladesaeulen.PermissionUtils.RationaleDialog
+com.example.ladesaeulen.DialogFragment <|-- com.example.ladesaeulen.PermissionUtils.RationaleDialog
+@enduml
